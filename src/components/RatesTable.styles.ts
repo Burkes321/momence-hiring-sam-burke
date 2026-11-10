@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Surface } from './ui/Surface'
+import { Surface } from '../ui/Surface'
 
 export const RatesSurface = styled(Surface)`
   h2 { margin-bottom: ${({ theme }) => theme.space.sm}; }

@@ -2,8 +2,8 @@ import { useId, useState } from 'react'
 import type { ExchangeRateTable } from '../types/cnb'
 import { convertCzkToCurrency, formatCurrency, normalizedCzkPerUnit, parseCzkInput } from '../utils/currency'
 import { AMOUNT_INPUT_HELP, AMOUNT_RANGE_ERROR, FIXING_DATE_FORMATTER, NORMALIZED_QUOTE_FORMATTER, QUOTE_FORMATTER } from './const'
-import { Field } from './ui/Field'
-import { Input, Select } from './ui/Controls'
+import { Field } from '../ui/Field'
+import { Input, Select } from '../ui/Controls'
 import { ConverterSurface, Fields, Note, QuoteDetails, Result } from './CurrencyConverter.styles'
 
 export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => {

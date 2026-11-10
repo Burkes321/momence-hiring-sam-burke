@@ -3,14 +3,10 @@ import '@testing-library/jest-dom/vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App } from './App'
-import { EXCHANGE_RATES_QUERY_OPTIONS } from './hooks/const'
+import { QUERY_DEFAULT_OPTIONS } from './const'
 import fixture from './test/fixtures/cnb-rates.txt?raw'
-
-beforeEach(() => {
-  vi.spyOn(EXCHANGE_RATES_QUERY_OPTIONS, 'retry').mockReturnValue(false)
-})
 
 afterEach(() => {
   cleanup()
@@ -19,7 +15,9 @@ afterEach(() => {
 })
 
 const renderApp = () => {
-  const client = new QueryClient({ defaultOptions: { queries: { gcTime: 0 } } })
+  const client = new QueryClient({
+    defaultOptions: { queries: { ...QUERY_DEFAULT_OPTIONS, retry: false, gcTime: 0 } },
+  })
   return render(<QueryClientProvider client={client}><App /></QueryClientProvider>)
 }
 

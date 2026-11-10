@@ -7,7 +7,7 @@
 - Tool configuration objects may use default exports when required by the tool.
 - Keep shared type definitions in `src/types`. Keep parsing, conversion, and formatting utilities in `src/utils`, with their unit tests alongside them.
 - Keep module-level constants, static configuration, and reusable formatter instances in a `const.ts` file in their respective folder. Functions, components, styles, and values derived inside functions remain with their implementation.
-- Keep query options such as `staleTime`, `gcTime`, retry policy, and refetch settings in the folder's `const.ts`; keep `queryKey` and `queryFn` at the query call site.
+- Keep shared query options such as `staleTime`, `gcTime`, retry policy, and refetch settings in the top-level `src/const.ts` and apply them through `QueryClient` defaults for every query. Override them at individual query call sites only when needed; keep `queryKey` and `queryFn` at the call site.
 - Keep README files only at the project root. Do not add nested README files; use a comment near the relevant code when an explanation is needed.
 - Do not update the README for every feature. Update it only when requested or when essential setup or usage instructions would otherwise become incorrect.
 - Comment only when it adds useful context, such as explaining non-obvious behavior or a decision. Avoid comments that merely restate what the code does; straightforward code does not need a comment.

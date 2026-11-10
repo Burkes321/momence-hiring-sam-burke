@@ -22,7 +22,8 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
       conversionError = true
     }
   }
-  const validationError = amount === null ? AMOUNT_INPUT_HELP : conversionError ? AMOUNT_RANGE_ERROR : null
+  const RANGE_VALIDATION_ERROR = conversionError ? AMOUNT_RANGE_ERROR : null
+  const VALIDATION_ERROR = amount === null ? AMOUNT_INPUT_HELP : RANGE_VALIDATION_ERROR
 
   return (
     <section aria-label="Currency converter">
@@ -37,8 +38,8 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
           inputMode="decimal"
           required
           value={amountInput}
-          aria-describedby={validationError ? `${id}-help ${id}-error` : `${id}-help`}
-          aria-invalid={validationError !== null}
+          aria-describedby={VALIDATION_ERROR ? `${id}-help ${id}-error` : `${id}-help`}
+          aria-invalid={VALIDATION_ERROR !== null}
           onChange={({ currentTarget }) => {
             setAmountInput(currentTarget.value)
             setBrowserInvalid(!currentTarget.validity.valid)
@@ -55,7 +56,7 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
         </select>
       </p>
       <div aria-live="polite" aria-atomic="true">
-        {validationError && <p id={`${id}-error`}>{validationError}</p>}
+        {VALIDATION_ERROR && <p id={`${id}-error`}>{VALIDATION_ERROR}</p>}
         {result !== null && selectedRate && <p><output htmlFor={`${id}-amount ${id}-currency`}>Approximately {formatCurrency(result, selectedRate.code)}</output></p>}
       </div>
       {selectedRate && (

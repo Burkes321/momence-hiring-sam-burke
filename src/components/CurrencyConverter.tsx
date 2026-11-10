@@ -2,6 +2,9 @@ import { useId, useState } from 'react'
 import type { ExchangeRateTable } from '../types/cnb'
 import { convertCzkToCurrency, formatCurrency, normalizedCzkPerUnit, parseCzkInput } from '../utils/currency'
 import { AMOUNT_INPUT_HELP, AMOUNT_RANGE_ERROR, FIXING_DATE_FORMATTER, NORMALIZED_QUOTE_FORMATTER, QUOTE_FORMATTER } from './const'
+import { Field } from '../ui/Field'
+import { Input, Select } from '../ui/Controls'
+import { ConverterSurface, Fields, Note, QuoteDetails, Result } from './CurrencyConverter.styles'
 
 export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => {
   const [amountInput, setAmountInput] = useState('1000')
@@ -26,47 +29,48 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
   const VALIDATION_ERROR = amount === null ? AMOUNT_INPUT_HELP : RANGE_VALIDATION_ERROR
 
   return (
-    <section aria-label="Currency converter">
+    <ConverterSurface aria-label="Currency converter">
       <h2>Convert CZK</h2>
-      <p>
-        <label htmlFor={`${id}-amount`}>Amount in CZK</label>{' '}
-        <input
-          id={`${id}-amount`}
-          type="number"
-          min="0"
-          step="0.01"
-          inputMode="decimal"
-          required
-          value={amountInput}
-          aria-describedby={VALIDATION_ERROR ? `${id}-help ${id}-error` : `${id}-help`}
-          aria-invalid={VALIDATION_ERROR !== null}
-          onChange={({ currentTarget }) => {
-            setAmountInput(currentTarget.value)
-            setBrowserInvalid(!currentTarget.validity.valid)
-          }}
-        />
-      </p>
-      <p id={`${id}-help`}>{AMOUNT_INPUT_HELP}</p>
-      <p>
-        <label htmlFor={`${id}-currency`}>Convert to</label>{' '}
-        <select id={`${id}-currency`} value={selectedRate?.code ?? ''} onChange={({ currentTarget }) => setSelectedCode(currentTarget.value)}>
-          {rates.map(({ code, country, currency }) => (
-            <option key={code} value={code}>{code} — {country}, {currency}</option>
-          ))}
-        </select>
-      </p>
-      <div aria-live="polite" aria-atomic="true">
-        {VALIDATION_ERROR && <p id={`${id}-error`}>{VALIDATION_ERROR}</p>}
-        {result !== null && selectedRate && <p><output htmlFor={`${id}-amount ${id}-currency`}>Approximately {formatCurrency(result, selectedRate.code)}</output></p>}
-      </div>
+      <Fields>
+        <Field label="Amount in CZK" htmlFor={`${id}-amount`} help={AMOUNT_INPUT_HELP} error={VALIDATION_ERROR}>
+          <Input
+            id={`${id}-amount`}
+            type="number"
+            min="0"
+            step="0.01"
+            inputMode="decimal"
+            required
+            value={amountInput}
+            aria-describedby={VALIDATION_ERROR ? `${id}-amount-error` : `${id}-amount-help`}
+            aria-invalid={VALIDATION_ERROR !== null}
+            onChange={({ currentTarget }) => {
+              setAmountInput(currentTarget.value)
+              setBrowserInvalid(!currentTarget.validity.valid)
+            }}
+          />
+        </Field>
+        <Field label="Convert to" htmlFor={`${id}-currency`}>
+          <Select id={`${id}-currency`} value={selectedRate?.code ?? ''} onChange={({ currentTarget }) => setSelectedCode(currentTarget.value)}>
+            {rates.map(({ code, country, currency }) => (
+              <option key={code} value={code}>{code} — {country}, {currency}</option>
+            ))}
+          </Select>
+        </Field>
+      </Fields>
+      <Result aria-live="polite" aria-atomic="true">
+        {result !== null && selectedRate && <output htmlFor={`${id}-amount ${id}-currency`}><span>Approximately </span>{formatCurrency(result, selectedRate.code)}</output>}
+        {VALIDATION_ERROR && <p>Enter a valid amount to see your conversion.</p>}
+      </Result>
       {selectedRate && (
-        <>
-          <p>{QUOTE_FORMATTER.format(selectedRate.amount)} {selectedRate.code} = {QUOTE_FORMATTER.format(selectedRate.rate)} CZK</p>
-          <p>1 {selectedRate.code} = {NORMALIZED_QUOTE_FORMATTER.format(normalizedCzkPerUnit(selectedRate))} CZK</p>
-        </>
+        <QuoteDetails>
+          <div>
+            <p>{QUOTE_FORMATTER.format(selectedRate.amount)} {selectedRate.code} = {QUOTE_FORMATTER.format(selectedRate.rate)} CZK</p>
+            <p>1 {selectedRate.code} = {NORMALIZED_QUOTE_FORMATTER.format(normalizedCzkPerUnit(selectedRate))} CZK</p>
+          </div>
+          <p>Fixing date: <time dateTime={publishedAt}>{FIXING_DATE_FORMATTER.format(new Date(`${publishedAt}T00:00:00Z`))}</time></p>
+        </QuoteDetails>
       )}
-      <p>Fixing date: <time dateTime={publishedAt}>{FIXING_DATE_FORMATTER.format(new Date(`${publishedAt}T00:00:00Z`))}</time></p>
-      <p>CNB reference rates exclude provider fees and spreads. Displayed conversions are rounded estimates.</p>
-    </section>
+      <Note>CNB reference rates exclude provider fees and spreads. Displayed conversions are rounded estimates.</Note>
+    </ConverterSurface>
   )
 }

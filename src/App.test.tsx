@@ -28,6 +28,33 @@ const createPendingResponse = () => {
 }
 
 describe('converter with fetched CNB rates', () => {
+  it.each([false, true])('starts with system dark preference %s and switches theme with the keyboard without resetting conversion', async (prefersDark) => {
+    const user = userEvent.setup()
+    const matchMedia = vi.fn().mockReturnValue({ matches: prefersDark })
+    const fetchMock = vi.fn().mockResolvedValue(new Response(fixture))
+    vi.stubGlobal('matchMedia', matchMedia)
+    vi.stubGlobal('fetch', fetchMock)
+    renderApp()
+    const input = await screen.findByLabelText('Amount in CZK')
+    await user.clear(input)
+    await user.type(input, '250')
+    await user.selectOptions(screen.getByLabelText('Convert to'), 'HUF')
+    const toggle = screen.getByRole('checkbox', { name: 'Dark theme' })
+    expect(matchMedia).toHaveBeenCalledWith('(prefers-color-scheme: dark)')
+    expect(toggle).toHaveProperty('checked', prefersDark)
+    await user.tab({ shift: true })
+    expect(input).toHaveFocus()
+    await user.tab({ shift: true })
+    await user.tab({ shift: true })
+    expect(toggle).toHaveFocus()
+    await user.keyboard('[Space]')
+    expect(toggle).toHaveProperty('checked', !prefersDark)
+    expect(input).toHaveValue(250)
+    expect(screen.getByLabelText('Convert to')).toHaveValue('HUF')
+    expect(within(screen.getByRole('region', { name: 'Currency converter' })).getByRole('status')).toHaveTextContent(/HUF\s4,000$/)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
   it('loads rates and converts input without making additional requests', async () => {
     const user = userEvent.setup()
     const pending = createPendingResponse()

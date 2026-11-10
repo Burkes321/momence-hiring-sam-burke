@@ -37,22 +37,23 @@ npm run dev
 
 Open the URL printed by Vite. No environment variables are required.
 
-## Data flow and caching
+## Data and caching decisions
 
-On startup, `useExchangeRates` uses TanStack Query to fetch `/api/rates`.
-`fetchRates` checks the HTTP response and passes the text to `parseCnbRates`.
-The parsed table supplies both the rates list and the converter; changing the
-amount or currency performs a local calculation without another request.
+The assigned [CNB daily text feed](https://www.cnb.cz/en/financial-markets/foreign-exchange-market/central-bank-exchange-rate-fixing/central-bank-exchange-rate-fixing/daily.txt)
+is the source of truth, using the [documented CNB format](https://www.cnb.cz/en/faq/Format-of-the-foreign-exchange-market-rates/).
+A same-origin proxy avoids dependence on cross-origin browser access and gives
+the app control over upstream timeouts and shared caching.
 
-- **Source:** the assigned [CNB daily text feed](https://www.cnb.cz/en/financial-markets/foreign-exchange-market/central-bank-exchange-rate-fixing/central-bank-exchange-rate-fixing/daily.txt), parsed according to the [CNB format documentation](https://www.cnb.cz/en/faq/Format-of-the-foreign-exchange-market-rates/).
-- **Development:** Vite proxies `/api/rates` directly to that fixed source.
-- **Production:** `api/rates.ts` delegates to `src/server/rates.ts`. The Vercel function accepts GET only, uses an eight-second upstream timeout, and returns the unchanged text. Upstream failures return 502; timeouts return 504.
-- **Edge cache:** successful responses use a five-minute shared cache. HTTP errors are not cached. Parsing happens in the browser, so an upstream HTTP 200 containing malformed data can still be cached for five minutes.
-- **Client cache:** global QueryClient defaults keep data fresh for one hour and retain inactive data for two hours. Reconnect and mount can refetch stale data; window focus and polling do not trigger requests. Request failures retry once; parser failures do not retry automatically.
-- **Manual refresh:** explicitly refetches while keeping the converter usable. The edge cache can still return the same fixing for up to five minutes.
+Shared caching reduces repeated requests to CNB across visitors. TanStack Query
+handles client caching and request states, keeping that logic out of the UI.
+Conversions run locally so editing an amount feels immediate and creates no
+additional network traffic.
 
-The fixing date always comes from the downloaded feed. “Latest available” refers
-to the published fixing returned by that feed and the caches above.
+The app favours caching and an explicit refresh action over continuous polling
+to limit unnecessary traffic. The trade-off is that a refresh may return a cached
+fixing. Showing the feed's fixing date makes the age of the rates visible, and
+retaining previously loaded rates after a failed refresh keeps the converter
+usable while clearly warning the user.
 
 ## Conversion and trade-offs
 

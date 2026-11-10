@@ -1,3 +1,4 @@
+import { parseCnbRates } from '../utils/cnb.ts'
 import { CNB_RATES_URL } from '../api/const.ts'
 import { RESPONSE_HEADERS, SUCCESS_CACHE_CONTROL, UPSTREAM_TIMEOUT_MS } from './const.ts'
 
@@ -22,6 +23,7 @@ export const handleRates = async (request: Request): Promise<Response> => {
     }
 
     const text = await upstream.text()
+    parseCnbRates(text)
 
     return new Response(text, {
       headers: { ...RESPONSE_HEADERS, 'Cache-Control': SUCCESS_CACHE_CONTROL },

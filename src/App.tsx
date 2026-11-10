@@ -13,9 +13,11 @@ import { Eyebrow, Header, Page, RequestBar, ThemeControl } from './App.styles'
 
 export const App = () => {
   const [isDark, setIsDark] = useState(() => window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false)
-  const { data, isPending, isError, error, refetch, isFetching } = useExchangeRates()
+  const { data, isPending, isError, error, refetch, isFetching, fetchStatus } = useExchangeRates()
+  const isPaused = fetchStatus === 'paused'
   const IDLE_REFRESH_LABEL = isError ? 'Retry' : 'Refresh rates'
-  const REFRESH_LABEL = isFetching ? 'Fetching rates…' : IDLE_REFRESH_LABEL
+  const ACTIVE_REFRESH_LABEL = isFetching ? 'Fetching rates…' : IDLE_REFRESH_LABEL
+  const REFRESH_LABEL = isPaused ? 'Waiting for connection…' : ACTIVE_REFRESH_LABEL
 
   return (
     <ThemeProvider theme={isDark ? DARK_THEME : LIGHT_THEME}>
@@ -32,7 +34,8 @@ export const App = () => {
             <Typography as="span" variant="small">Dark theme</Typography>
           </ThemeControl>
         </Header>
-        {isPending && <Feedback><Typography as="output">Loading exchange rates…</Typography></Feedback>}
+        {isPaused && <Feedback><Typography as="output">Waiting for a network connection…</Typography></Feedback>}
+        {isPending && !isPaused && <Feedback><Typography as="output">Loading exchange rates…</Typography></Feedback>}
         {isError && (
           <Feedback role="alert" $tone="error">
             <Typography>
@@ -44,7 +47,7 @@ export const App = () => {
         <RequestBar>
           <Typography variant="small">Official fixing rates · CZK to foreign currency</Typography>
           {data !== undefined && isFetching && <Typography as="output" variant="small">Refreshing rates…</Typography>}
-          <Button type="button" $variant="secondary" onClick={() => void refetch()} disabled={isFetching}>
+          <Button type="button" $variant="secondary" onClick={() => void refetch()} disabled={isFetching || isPaused}>
             <Typography as="span" weight="semibold">{REFRESH_LABEL}</Typography>
           </Button>
         </RequestBar>

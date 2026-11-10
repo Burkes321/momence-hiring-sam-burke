@@ -43,12 +43,14 @@ describe('/api/rates', () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it.each(['upstream status', 'network failure', 'body failure'])('returns an uncached generic 502 for %s', async (failure) => {
+  it.each(['upstream status', 'network failure', 'body failure', 'malformed content'])('returns an uncached generic 502 for %s', async (failure) => {
     const fetchMock = vi.fn()
     if (failure === 'upstream status') {
       fetchMock.mockResolvedValue(new Response('private upstream detail', { status: 503 }))
     } else if (failure === 'network failure') {
       fetchMock.mockRejectedValue(new Error('private network detail'))
+    } else if (failure === 'malformed content') {
+      fetchMock.mockResolvedValue(new Response('<html>Temporary upstream error</html>'))
     } else {
       fetchMock.mockResolvedValue({ ok: true, text: () => Promise.reject(new Error('private body detail')) })
     }

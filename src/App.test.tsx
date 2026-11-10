@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { onlineManager, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -28,6 +28,48 @@ const createPendingResponse = () => {
 }
 
 describe('converter with fetched CNB rates', () => {
+  it.each([false, true])('resumes a paused request with existing data: %s', async (hasData) => {
+    const wasOnline = onlineManager.isOnline()
+    const client = new QueryClient({
+      defaultOptions: { queries: { ...QUERY_DEFAULT_OPTIONS, retry: false, gcTime: 0 } },
+    })
+    const user = userEvent.setup()
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(new Response(fixture)))
+    vi.stubGlobal('fetch', fetchMock)
+    onlineManager.setOnline(hasData)
+    const view = render(<QueryClientProvider client={client}><App /></QueryClientProvider>)
+    try {
+      if (hasData) {
+        const input = await screen.findByLabelText('Amount in CZK')
+        await user.clear(input)
+        await user.type(input, '250')
+        await user.selectOptions(screen.getByLabelText('Convert to'), 'HUF')
+        act(() => onlineManager.setOnline(false))
+        await user.click(screen.getByRole('button', { name: 'Refresh rates' }))
+      }
+      expect(await screen.findByText('Waiting for a network connection…')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Waiting for connection…' })).toBeDisabled()
+      expect(screen.queryByText('Loading exchange rates…')).not.toBeInTheDocument()
+      expect(screen.queryByText('Refreshing rates…')).not.toBeInTheDocument()
+      expect(fetchMock).toHaveBeenCalledTimes(hasData ? 1 : 0)
+      if (hasData) {
+        expect(screen.getByLabelText('Amount in CZK')).toHaveValue(250)
+        expect(screen.getByLabelText('Convert to')).toHaveValue('HUF')
+      } else {
+        expect(screen.queryByLabelText('Amount in CZK')).not.toBeInTheDocument()
+      }
+      act(() => onlineManager.setOnline(true))
+      await waitFor(() => expect(screen.queryByText('Waiting for a network connection…')).not.toBeInTheDocument())
+      expect(await screen.findByLabelText('Amount in CZK')).toHaveValue(hasData ? 250 : 1000)
+      expect(screen.getByRole('button', { name: 'Refresh rates' })).toBeEnabled()
+      expect(fetchMock).toHaveBeenCalledTimes(hasData ? 2 : 1)
+    } finally {
+      view.unmount()
+      client.clear()
+      onlineManager.setOnline(wasOnline)
+    }
+  })
+
   it.each([false, true])('starts with system dark preference %s and switches theme with the keyboard without resetting conversion', async (prefersDark) => {
     const user = userEvent.setup()
     const matchMedia = vi.fn().mockReturnValue({ matches: prefersDark })

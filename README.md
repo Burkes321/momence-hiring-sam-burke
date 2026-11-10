@@ -17,7 +17,16 @@ npm run dev
 
 Open the local URL to see the latest available fixing and exchange rates.
 Vite proxies `/api/rates` to the fixed CNB source during development.
-The production API handler will be added in a later step.
+Production uses the Vercel function in `api/rates.ts` to retrieve that same feed.
+It accepts GET requests, limits upstream requests to eight seconds, and caches
+successful responses at the edge for five minutes. Failures are never cached.
+Parsing and conversion run in the browser. A manual refresh can receive a cached
+response, including malformed upstream data, until that five-minute cache expires.
+
+For deployment by the project owner, import the repository into Vercel using the
+Vite preset, Node.js 24, build command `npm run build`, and output directory `dist`.
+No environment variables or routing rewrites are required. After deployment,
+verify `/api/rates` returns CNB text and that the application displays its fixing date.
 
 ## Checks
 

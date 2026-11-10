@@ -1,11 +1,18 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
+import { ThemeProvider } from 'styled-components'
+import { cleanup, render as renderComponent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
 import fixture from '../test/fixtures/cnb-rates.txt?raw'
 import { parseCnbRates } from '../utils/cnb'
 import { CurrencyConverter } from './CurrencyConverter'
+import { LIGHT_THEME } from '../styles/const'
+
+const render = (ui: ReactNode) => renderComponent(ui, {
+  wrapper: ({ children }) => <ThemeProvider theme={LIGHT_THEME}>{children}</ThemeProvider>,
+})
 
 afterEach(cleanup)
 
@@ -28,6 +35,7 @@ describe('CurrencyConverter', () => {
     const input = screen.getByLabelText('Amount in CZK')
     await user.clear(input)
     expect(input).toHaveAttribute('aria-invalid', 'true')
+    expect(input).toHaveAccessibleDescription('Enter a non-negative CZK amount with up to two decimal places.')
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
     await user.type(input, '0')
     expect(screen.getByRole('status')).toHaveTextContent(/EUR\s0\.00/)
@@ -40,6 +48,7 @@ describe('CurrencyConverter', () => {
     await user.clear(input)
     await user.type(input, '12.34')
     expect(input).toHaveAttribute('aria-invalid', 'false')
+    expect(input).toHaveAccessibleDescription('Enter a non-negative CZK amount with up to two decimal places.')
     expect(screen.getByRole('status')).toHaveTextContent(/EUR\s0\.49/)
   })
 

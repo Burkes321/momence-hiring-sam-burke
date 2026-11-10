@@ -21,10 +21,6 @@ export const GlobalStyle = createGlobalStyle`
     outline: 3px solid ${({ theme }) => theme.colors.focus};
     outline-offset: 3px;
   }
-  h1, h2, p { margin: 0; }
-  h1, h2 { line-height: 1.2; }
-  h1 { font-size: ${({ theme }) => theme.typography.title}; letter-spacing: -0.035em; }
-  h2 { font-size: ${({ theme }) => theme.typography.heading}; letter-spacing: -0.02em; }
   a { color: ${({ theme }) => theme.colors.accent}; text-underline-offset: 0.2em; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {

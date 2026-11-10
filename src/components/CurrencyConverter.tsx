@@ -4,7 +4,8 @@ import { convertCzkToCurrency, formatCurrency, normalizedCzkPerUnit, parseCzkInp
 import { AMOUNT_INPUT_HELP, AMOUNT_RANGE_ERROR, FIXING_DATE_FORMATTER, NORMALIZED_QUOTE_FORMATTER, QUOTE_FORMATTER } from './const'
 import { Field } from '../ui/Field'
 import { Input, Select } from '../ui/Controls'
-import { ConverterSurface, Fields, Note, QuoteDetails, Result } from './CurrencyConverter.styles'
+import { Typography } from '../ui/Typography'
+import { ConverterSurface, Fields, QuoteDetails, Result } from './CurrencyConverter.styles'
 
 export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => {
   const [amountInput, setAmountInput] = useState('1000')
@@ -30,7 +31,7 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
 
   return (
     <ConverterSurface aria-label="Currency converter">
-      <h2>Convert CZK</h2>
+      <Typography as="h2" variant="heading">Convert CZK</Typography>
       <Fields>
         <Field label="Amount in CZK" htmlFor={`${id}-amount`} help={AMOUNT_INPUT_HELP} error={VALIDATION_ERROR}>
           <Input
@@ -52,25 +53,25 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
         <Field label="Convert to" htmlFor={`${id}-currency`}>
           <Select id={`${id}-currency`} value={selectedRate?.code ?? ''} onChange={({ currentTarget }) => setSelectedCode(currentTarget.value)}>
             {rates.map(({ code, country, currency }) => (
-              <option key={code} value={code}>{code} — {country}, {currency}</option>
+              <Typography as="option" key={code} value={code}>{code} — {country}, {currency}</Typography>
             ))}
           </Select>
         </Field>
       </Fields>
       <Result aria-live="polite" aria-atomic="true">
-        {result !== null && selectedRate && <output htmlFor={`${id}-amount ${id}-currency`}><span>Approximately </span>{formatCurrency(result, selectedRate.code)}</output>}
-        {VALIDATION_ERROR && <p>Enter a valid amount to see your conversion.</p>}
+        {result !== null && selectedRate && <Typography as="output" variant="result" htmlFor={`${id}-amount ${id}-currency`}><Typography as="span" variant="small" weight="medium">Approximately </Typography>{formatCurrency(result, selectedRate.code)}</Typography>}
+        {VALIDATION_ERROR && <Typography>Enter a valid amount to see your conversion.</Typography>}
       </Result>
       {selectedRate && (
         <QuoteDetails>
           <div>
-            <p>{QUOTE_FORMATTER.format(selectedRate.amount)} {selectedRate.code} = {QUOTE_FORMATTER.format(selectedRate.rate)} CZK</p>
-            <p>1 {selectedRate.code} = {NORMALIZED_QUOTE_FORMATTER.format(normalizedCzkPerUnit(selectedRate))} CZK</p>
+            <Typography variant="small" tone="text" weight="semibold">{QUOTE_FORMATTER.format(selectedRate.amount)} {selectedRate.code} = {QUOTE_FORMATTER.format(selectedRate.rate)} CZK</Typography>
+            <Typography variant="small" tone="muted">1 {selectedRate.code} = {NORMALIZED_QUOTE_FORMATTER.format(normalizedCzkPerUnit(selectedRate))} CZK</Typography>
           </div>
-          <p>Fixing date: <time dateTime={publishedAt}>{FIXING_DATE_FORMATTER.format(new Date(`${publishedAt}T00:00:00Z`))}</time></p>
+          <Typography variant="small" tone="muted">Fixing date: <time dateTime={publishedAt}>{FIXING_DATE_FORMATTER.format(new Date(`${publishedAt}T00:00:00Z`))}</time></Typography>
         </QuoteDetails>
       )}
-      <Note>CNB reference rates exclude provider fees and spreads. Displayed conversions are rounded estimates.</Note>
+      <Typography variant="small" tone="muted">CNB reference rates exclude provider fees and spreads. Displayed conversions are rounded estimates.</Typography>
     </ConverterSurface>
   )
 }

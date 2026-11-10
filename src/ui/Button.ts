@@ -7,7 +7,6 @@ export const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
   border-radius: ${({ theme }) => theme.radius.control};
   background: ${({ theme, $variant }) => $variant === 'secondary' ? theme.colors.surface : theme.colors.accent};
   color: ${({ theme, $variant }) => $variant === 'secondary' ? theme.colors.accent : theme.colors.onAccent};
-  font-weight: 650;
   cursor: pointer;
   &:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 0.2em; }
   &:disabled {

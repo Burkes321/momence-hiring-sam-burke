@@ -7,11 +7,11 @@ const controlStyles = css`
   padding: ${({ theme }) => theme.space.md};
   border: 1px solid ${({ theme }) => theme.colors.controlBorder};
   border-radius: ${({ theme }) => theme.radius.control};
-  background: ${({ theme }) => theme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.surface};
   color: ${({ theme }) => theme.colors.text};
   &[aria-invalid='true'] { border-color: ${({ theme }) => theme.colors.error}; }
   &:disabled {
-    background: ${({ theme }) => theme.colors.subtle};
+    background-color: ${({ theme }) => theme.colors.subtle};
     color: ${({ theme }) => theme.colors.muted};
     cursor: not-allowed;
   }
@@ -26,8 +26,6 @@ export const Select = styled.select`
   background-repeat: no-repeat;
   background-position: right ${({ theme }) => theme.space.md} center;
   background-size: 1rem;
-
-  &:disabled { background-color: ${({ theme }) => theme.colors.subtle}; }
 
   @media (forced-colors: active) {
     appearance: auto;

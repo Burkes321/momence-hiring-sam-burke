@@ -1,5 +1,5 @@
-import type { ExchangeRate, ExchangeRateTable } from '../types/cnb'
-import { CNB_HEADER, CNB_MONTHS } from './const'
+import type { ExchangeRate, ExchangeRateTable } from '../types/cnb.ts'
+import { CNB_HEADER, CNB_MONTHS } from './const.ts'
 
 export class CnbParseError extends Error {
   constructor(message: string) {

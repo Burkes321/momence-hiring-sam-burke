@@ -1,0 +1,7 @@
+06 Nov 2026 #214
+Country|Currency|Amount|Code|Rate
+EMU|euro|1|EUR|25.000
+Hungary|forint|100|HUF|6.250
+Japan|yen|100|JPY|12.500
+Indonesia|rupiah|1000|IDR|1.250
+Turkey|lira|100|TRY|40.000

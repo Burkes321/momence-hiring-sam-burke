@@ -27,6 +27,7 @@ dist-ssr
 
 # Verification and local configuration
 coverage/
+.vitest/
 playwright-report/
 test-results/
 .vercel/

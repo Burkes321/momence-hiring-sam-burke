@@ -55,4 +55,28 @@ describe('CurrencyConverter', () => {
     expect(screen.getByLabelText('Convert to')).toHaveValue('JPY')
     expect(screen.getByRole('status')).toHaveTextContent(/JPY\s8,000/)
   })
+
+  it('uses the first available currency when EUR is absent on startup', () => {
+    const table = parseCnbRates(fixture)
+    render(<CurrencyConverter {...table} rates={table.rates.filter(({ code }) => code !== 'EUR')} />)
+    expect(screen.getByLabelText('Convert to')).toHaveValue('HUF')
+    expect(screen.getByRole('status')).toHaveTextContent(/HUF\s16,000$/)
+    expect(screen.getByText('6 November 2026')).toHaveAttribute('datetime', '2026-11-06')
+  })
+
+  it('associates overflow feedback with the amount and recovers after correction', async () => {
+    const user = userEvent.setup()
+    render(<CurrencyConverter {...parseCnbRates(fixture)} />)
+    const input = screen.getByLabelText('Amount in CZK')
+    await user.selectOptions(screen.getByLabelText('Convert to'), 'HUF')
+    await user.clear(input)
+    await user.paste(`1${'0'.repeat(308)}`)
+    expect(input).toHaveAttribute('aria-invalid', 'true')
+    expect(input).toHaveAccessibleDescription(/Enter a smaller amount/)
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    await user.clear(input)
+    await user.type(input, '1000')
+    expect(input).toHaveAttribute('aria-invalid', 'false')
+    expect(screen.getByRole('status')).toHaveTextContent(/HUF\s16,000$/)
+  })
 })

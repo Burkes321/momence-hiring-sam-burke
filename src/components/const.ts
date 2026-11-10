@@ -2,3 +2,4 @@ export const FIXING_DATE_FORMATTER = new Intl.DateTimeFormat('en-GB', { dateStyl
 export const QUOTE_FORMATTER = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 3 })
 export const NORMALIZED_QUOTE_FORMATTER = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 8 })
 export const AMOUNT_INPUT_HELP = 'Enter a non-negative CZK amount with up to two decimal places.'
+export const AMOUNT_RANGE_ERROR = 'Enter a smaller amount to calculate a conversion.'

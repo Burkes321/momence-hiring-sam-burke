@@ -8,3 +8,9 @@
 - Keep query options such as `staleTime`, `gcTime`, retry policy, and refetch settings in the folder's `const.ts`; keep `queryKey` and `queryFn` at the query call site.
 - Keep README files only at the project root. Do not add nested README files; use a comment near the relevant code when an explanation is needed.
 - Comment only when it adds useful context, such as explaining non-obvious behavior or a decision. Avoid comments that merely restate what the code does; straightforward code does not need a comment.
+
+# Git workflow
+
+- Before implementing a feature, switch to a new branch dedicated to that feature. Keep the task isolated and focused on that branch.
+- Verify and commit the completed changes, push the branch, and open a pull request on GitHub.
+- Merge through the GitHub pull request after the relevant checks pass. Do not implement features directly on `main` or push feature commits directly to `main`.

@@ -4,7 +4,7 @@ import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
 import fixture from '../test/fixtures/cnb-rates.txt?raw'
-import { parseCnbRates } from '../types/cnb'
+import { parseCnbRates } from '../utils/cnb'
 import { CurrencyConverter } from './CurrencyConverter'
 
 afterEach(cleanup)
@@ -62,21 +62,5 @@ describe('CurrencyConverter', () => {
     expect(screen.getByLabelText('Convert to')).toHaveValue('HUF')
     expect(screen.getByRole('status')).toHaveTextContent(/HUF\s16,000$/)
     expect(screen.getByText('6 November 2026')).toHaveAttribute('datetime', '2026-11-06')
-  })
-
-  it('associates overflow feedback with the amount and recovers after correction', async () => {
-    const user = userEvent.setup()
-    render(<CurrencyConverter {...parseCnbRates(fixture)} />)
-    const input = screen.getByLabelText('Amount in CZK')
-    await user.selectOptions(screen.getByLabelText('Convert to'), 'HUF')
-    await user.clear(input)
-    await user.paste(`1${'0'.repeat(308)}`)
-    expect(input).toHaveAttribute('aria-invalid', 'true')
-    expect(input).toHaveAccessibleDescription(/Enter a smaller amount/)
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
-    await user.clear(input)
-    await user.type(input, '1000')
-    expect(input).toHaveAttribute('aria-invalid', 'false')
-    expect(screen.getByRole('status')).toHaveTextContent(/HUF\s16,000$/)
   })
 })

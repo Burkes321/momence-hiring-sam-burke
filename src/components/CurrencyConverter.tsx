@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import type { ExchangeRateTable } from '../types/cnb'
-import { convertCzkToCurrency, formatCurrency, normalizedCzkPerUnit, parseCzkInput } from '../types/currency'
+import { convertCzkToCurrency, formatCurrency, normalizedCzkPerUnit, parseCzkInput } from '../utils/currency'
 import { AMOUNT_INPUT_HELP, AMOUNT_RANGE_ERROR, FIXING_DATE_FORMATTER, NORMALIZED_QUOTE_FORMATTER, QUOTE_FORMATTER } from './const'
 
 export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => {

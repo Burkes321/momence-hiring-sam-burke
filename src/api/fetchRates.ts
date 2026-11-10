@@ -1,4 +1,4 @@
-import { parseCnbRates } from '../types/cnb'
+import { parseCnbRates } from '../utils/cnb'
 import type { ExchangeRateTable } from '../types/cnb'
 import { RATES_ENDPOINT } from './const'
 

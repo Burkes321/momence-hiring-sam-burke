@@ -1,6 +1,6 @@
 import { RatesTable } from './components/RatesTable'
 import { CurrencyConverter } from './components/CurrencyConverter'
-import { CnbParseError } from './types/cnb'
+import { CnbParseError } from './utils/cnb'
 import { useExchangeRates } from './hooks/useExchangeRates'
 
 export const App = () => {

@@ -1,5 +1,5 @@
 import type { UseQueryOptions } from '@tanstack/react-query'
-import { CnbParseError } from '../types/cnb'
+import { CnbParseError } from '../utils/cnb'
 import type { ExchangeRateTable } from '../types/cnb'
 
 export const EXCHANGE_RATES_QUERY_OPTIONS = {

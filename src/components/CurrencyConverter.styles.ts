@@ -23,18 +23,10 @@ export const Result = styled.div`
   color: ${({ theme }) => theme.colors.accent};
   output {
     display: block;
-    font-size: ${({ theme }) => theme.typography.result};
-    font-weight: 650;
-    line-height: 1.25;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
   }
   output span {
     display: block;
     margin-bottom: ${({ theme }) => theme.space.sm};
-    font-size: ${({ theme }) => theme.typography.small};
-    font-weight: 500;
-    letter-spacing: normal;
   }
 `
 
@@ -43,12 +35,4 @@ export const QuoteDetails = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
   gap: ${({ theme }) => theme.space.lg};
-  font-size: ${({ theme }) => theme.typography.small};
-  color: ${({ theme }) => theme.colors.muted};
-  p:first-child { color: ${({ theme }) => theme.colors.text}; font-weight: 600; }
-`
-
-export const Note = styled.p`
-  color: ${({ theme }) => theme.colors.muted};
-  font-size: ${({ theme }) => theme.typography.small};
 `

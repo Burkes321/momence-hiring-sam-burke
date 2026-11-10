@@ -1,4 +1,6 @@
 // @vitest-environment node
+import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { readFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import endpoint from '../../api/rates.ts'
@@ -12,6 +14,15 @@ afterEach(() => {
 })
 
 describe('/api/rates', () => {
+  it('loads the endpoint in native Node without bundler resolution', () => {
+    const output = execFileSync(process.execPath, [
+      '--input-type=module',
+      '-e',
+      "import endpoint from './api/rates.ts'; console.log(typeof endpoint.fetch)",
+    ], { cwd: fileURLToPath(new URL('../../', import.meta.url)), encoding: 'utf8' })
+    expect(output.trim()).toBe('function')
+  })
+
   it('returns the unchanged feed with shared caching and fetches only the fixed source', async () => {
     const fixture = await readFile(new URL('../test/fixtures/cnb-rates.txt', import.meta.url), 'utf8')
     const fetchMock = vi.fn().mockResolvedValue(new Response(fixture))

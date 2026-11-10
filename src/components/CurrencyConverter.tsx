@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import type { ExchangeRateTable } from '../types/cnb'
-import { convertCzkToCurrency, formatCurrency, normalizedCzkPerUnit, parseCzkInput } from '../types/currency'
-import { AMOUNT_INPUT_HELP, FIXING_DATE_FORMATTER, NORMALIZED_QUOTE_FORMATTER, QUOTE_FORMATTER } from './const'
+import { convertCzkToCurrency, formatCurrency, normalizedCzkPerUnit, parseCzkInput } from '../utils/currency'
+import { AMOUNT_INPUT_HELP, AMOUNT_RANGE_ERROR, FIXING_DATE_FORMATTER, NORMALIZED_QUOTE_FORMATTER, QUOTE_FORMATTER } from './const'
 
 export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => {
   const [amountInput, setAmountInput] = useState('1000')
@@ -22,6 +22,8 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
       conversionError = true
     }
   }
+  const RANGE_VALIDATION_ERROR = conversionError ? AMOUNT_RANGE_ERROR : null
+  const VALIDATION_ERROR = amount === null ? AMOUNT_INPUT_HELP : RANGE_VALIDATION_ERROR
 
   return (
     <section aria-label="Currency converter">
@@ -34,9 +36,10 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
           min="0"
           step="0.01"
           inputMode="decimal"
+          required
           value={amountInput}
-          aria-describedby={`${id}-help`}
-          aria-invalid={amount === null || conversionError}
+          aria-describedby={VALIDATION_ERROR ? `${id}-help ${id}-error` : `${id}-help`}
+          aria-invalid={VALIDATION_ERROR !== null}
           onChange={({ currentTarget }) => {
             setAmountInput(currentTarget.value)
             setBrowserInvalid(!currentTarget.validity.valid)
@@ -53,9 +56,8 @@ export const CurrencyConverter = ({ rates, publishedAt }: ExchangeRateTable) => 
         </select>
       </p>
       <div aria-live="polite" aria-atomic="true">
-        {amount === null && <p>{AMOUNT_INPUT_HELP}</p>}
-        {conversionError && <p>Enter a smaller amount to calculate a conversion.</p>}
-        {result !== null && selectedRate && <p><output>Approximately {formatCurrency(result, selectedRate.code)}</output></p>}
+        {VALIDATION_ERROR && <p id={`${id}-error`}>{VALIDATION_ERROR}</p>}
+        {result !== null && selectedRate && <p><output htmlFor={`${id}-amount ${id}-currency`}>Approximately {formatCurrency(result, selectedRate.code)}</output></p>}
       </div>
       {selectedRate && (
         <>

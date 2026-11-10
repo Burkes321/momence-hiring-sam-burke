@@ -4,7 +4,7 @@ import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
 import fixture from '../test/fixtures/cnb-rates.txt?raw'
-import { parseCnbRates } from '../types/cnb'
+import { parseCnbRates } from '../utils/cnb'
 import { CurrencyConverter } from './CurrencyConverter'
 
 afterEach(cleanup)
@@ -54,5 +54,13 @@ describe('CurrencyConverter', () => {
     rerender(<CurrencyConverter {...table} rates={table.rates.filter(({ code }) => code === 'JPY')} />)
     expect(screen.getByLabelText('Convert to')).toHaveValue('JPY')
     expect(screen.getByRole('status')).toHaveTextContent(/JPY\s8,000/)
+  })
+
+  it('uses the first available currency when EUR is absent on startup', () => {
+    const table = parseCnbRates(fixture)
+    render(<CurrencyConverter {...table} rates={table.rates.filter(({ code }) => code !== 'EUR')} />)
+    expect(screen.getByLabelText('Convert to')).toHaveValue('HUF')
+    expect(screen.getByRole('status')).toHaveTextContent(/HUF\s16,000$/)
+    expect(screen.getByText('6 November 2026')).toHaveAttribute('datetime', '2026-11-06')
   })
 })

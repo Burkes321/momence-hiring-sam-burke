@@ -1,4 +1,4 @@
-import type { ExchangeRate } from './cnb'
+import type { ExchangeRate } from '../types/cnb'
 import { CURRENCY_FORMATTERS } from './const'
 
 export const normalizedCzkPerUnit = ({ amount, rate }: ExchangeRate): number => {

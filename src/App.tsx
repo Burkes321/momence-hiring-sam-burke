@@ -1,10 +1,12 @@
 import { RatesTable } from './components/RatesTable'
 import { CurrencyConverter } from './components/CurrencyConverter'
-import { CnbParseError } from './types/cnb'
+import { CnbParseError } from './utils/cnb'
 import { useExchangeRates } from './hooks/useExchangeRates'
 
 export const App = () => {
   const { data, isPending, isError, error, refetch, isFetching } = useExchangeRates()
+  const IDLE_REFRESH_LABEL = isError ? 'Retry' : 'Refresh rates'
+  const REFRESH_LABEL = isFetching ? 'Fetching rates…' : IDLE_REFRESH_LABEL
 
   return (
     <main>
@@ -19,7 +21,7 @@ export const App = () => {
       )}
       {data !== undefined && isFetching && <p><output>Refreshing rates…</output></p>}
       <button type="button" onClick={() => void refetch()} disabled={isFetching}>
-        {isFetching ? 'Fetching rates…' : isError ? 'Retry' : 'Refresh rates'}
+        {REFRESH_LABEL}
       </button>
       {data !== undefined && <>
         <CurrencyConverter {...data} />

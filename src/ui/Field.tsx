@@ -1,23 +1,12 @@
 import type { ReactNode } from 'react'
 import styled from 'styled-components'
+import { Typography } from './Typography'
 
 const Container = styled.div`
   display: grid;
   align-content: start;
   gap: ${({ theme }) => theme.space.sm};
   min-width: 0;
-  label { font-weight: 650; }
-`
-
-const Help = styled.p`
-  color: ${({ theme }) => theme.colors.muted};
-  font-size: ${({ theme }) => theme.typography.small};
-`
-
-const ErrorText = styled.p`
-  color: ${({ theme }) => theme.colors.error};
-  font-size: ${({ theme }) => theme.typography.small};
-  font-weight: 600;
 `
 
 interface FieldProps {
@@ -30,11 +19,11 @@ interface FieldProps {
 
 export const Field = ({ label, htmlFor, help, error, children }: FieldProps) => (
   <Container>
-    <label htmlFor={htmlFor}>{label}</label>
+    <Typography as="label" htmlFor={htmlFor} weight="semibold">{label}</Typography>
     {children}
-    {help && !error && <Help id={`${htmlFor}-help`}>{help}</Help>}
+    {help && !error && <Typography id={`${htmlFor}-help`} variant="small" tone="muted">{help}</Typography>}
     <div aria-live="polite" aria-atomic="true">
-      {error && <ErrorText id={`${htmlFor}-error`}>{error}</ErrorText>}
+      {error && <Typography id={`${htmlFor}-error`} variant="small" tone="error" weight="semibold">{error}</Typography>}
     </div>
   </Container>
 )

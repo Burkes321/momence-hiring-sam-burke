@@ -4,11 +4,12 @@ import { RatesTable } from './components/RatesTable'
 import { CurrencyConverter } from './components/CurrencyConverter'
 import { Button } from './ui/Button'
 import { Feedback } from './ui/Feedback'
+import { Typography } from './ui/Typography'
 import { CnbParseError } from './utils/cnb'
 import { useExchangeRates } from './hooks/useExchangeRates'
 import { DARK_THEME, LIGHT_THEME } from './styles/const'
 import { GlobalStyle } from './styles/GlobalStyle'
-import { Eyebrow, Footer, Header, Page, RequestBar, ThemeControl } from './App.styles'
+import { Eyebrow, Header, Page, RequestBar, ThemeControl } from './App.styles'
 
 export const App = () => {
   const [isDark, setIsDark] = useState(() => window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false)
@@ -22,34 +23,36 @@ export const App = () => {
       <Page>
         <Header>
           <div>
-            <Eyebrow>Czech National Bank · Reference rates</Eyebrow>
-            <h1>CZK Currency Converter</h1>
-            <p>Convert Czech koruna using the latest available official CNB fixing.</p>
+            <Eyebrow variant="small" tone="accent" weight="bold">Czech National Bank · Reference rates</Eyebrow>
+            <Typography as="h1" variant="title">CZK Currency Converter</Typography>
+            <Typography tone="muted">Convert Czech koruna using the latest available official CNB fixing.</Typography>
           </div>
           <ThemeControl>
             <input type="checkbox" checked={isDark} onChange={({ currentTarget }) => setIsDark(currentTarget.checked)} />
-            Dark theme
+            <Typography as="span" variant="small">Dark theme</Typography>
           </ThemeControl>
         </Header>
-        {isPending && <Feedback><output>Loading exchange rates…</output></Feedback>}
+        {isPending && <Feedback><Typography as="output">Loading exchange rates…</Typography></Feedback>}
         {isError && (
           <Feedback role="alert" $tone="error">
-            {data !== undefined && 'Refresh failed. Showing the previously loaded rates. '}
-            {error instanceof CnbParseError ? 'CNB returned data we couldn’t read.' : 'Unable to load CNB exchange rates.'}
+            <Typography>
+              {data !== undefined && 'Refresh failed. Showing the previously loaded rates. '}
+              {error instanceof CnbParseError ? 'CNB returned data we couldn’t read.' : 'Unable to load CNB exchange rates.'}
+            </Typography>
           </Feedback>
         )}
         <RequestBar>
-          <p>Official fixing rates · CZK to foreign currency</p>
-          {data !== undefined && isFetching && <output>Refreshing rates…</output>}
+          <Typography variant="small">Official fixing rates · CZK to foreign currency</Typography>
+          {data !== undefined && isFetching && <Typography as="output" variant="small">Refreshing rates…</Typography>}
           <Button type="button" $variant="secondary" onClick={() => void refetch()} disabled={isFetching}>
-            {REFRESH_LABEL}
+            <Typography as="span" weight="semibold">{REFRESH_LABEL}</Typography>
           </Button>
         </RequestBar>
         {data !== undefined && <>
           <CurrencyConverter {...data} />
           <RatesTable {...data} />
         </>}
-        <Footer>Source: <a href="https://www.cnb.cz/en/financial-markets/foreign-exchange-market/central-bank-exchange-rate-fixing/central-bank-exchange-rate-fixing/">Czech National Bank</a>. Reference rates exclude provider fees and spreads.</Footer>
+        <Typography as="footer" variant="small" tone="muted">Source: <Typography as="a" href="https://www.cnb.cz/en/financial-markets/foreign-exchange-market/central-bank-exchange-rate-fixing/central-bank-exchange-rate-fixing/" variant="small" tone="accent">Czech National Bank</Typography>. Reference rates exclude provider fees and spreads.</Typography>
       </Page>
     </ThemeProvider>
   )
